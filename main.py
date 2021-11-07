@@ -1,3 +1,11 @@
+"""Echo-bot for Flock messenger.
+
+An example of Flock application.
+
+
+:copyright: (c) nautics889
+"""
+
 import os
 import time
 from typing import Dict
@@ -11,6 +19,11 @@ DELAY_AFTER_INSTALL = 2
 
 
 def init_chat(user_id):
+    """Initialize chat with Flock user.
+
+    :param user_id: Flock user ID.
+    :return: None
+    """
     time.sleep(DELAY_AFTER_INSTALL)
     data = {
         "to": user_id,
@@ -25,6 +38,12 @@ def init_chat(user_id):
 
 
 def do_echo(user_id, msg):
+    """Simply repeats after Flock user.
+
+    :param user_id: Flock user ID.
+    :param msg: Message that user has sent to bot.
+    :return: None
+    """
     data = {
         "to": user_id,
         "text": msg,
@@ -38,6 +57,14 @@ def do_echo(user_id, msg):
 
 
 def dispatcher(payload: Dict, response: Response, bg_tasks: BackgroundTasks):
+    """Entry point function for handling callbacks from Flock.
+
+    :param payload: Deserialized JSON data from Flock. Contains event
+                    information.
+    :param response: Object that represents the response on request.
+    :param bg_tasks: Facade for background tasks.
+    :return: None
+    """
     evt = payload.get('name')
     user_id = payload.get('userId')
     if evt == "app.install":
@@ -54,7 +81,8 @@ def main():
     app = FastAPI()
     app.post('/')(dispatcher)
 
-    uvicorn.run(app, host="0.0.0.0", port=8273)
+    uvicorn.run(app, host=os.environ.get('HOST', '0.0.0.0'),
+                port=os.environ.get('PORT', 8273))
 
 
 if __name__ == '__main__':
